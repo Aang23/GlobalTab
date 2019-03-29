@@ -53,7 +53,8 @@ public class GlobalTab {
 
     @Subscribe
     public void onInitialization(ProxyInitializeEvent event) {
-        luckpermsapi = LuckPerms.getApi();
+        if (GlobalTab.server.getPluginManager().isLoaded("luckperms"))
+            luckpermsapi = LuckPerms.getApi();
     }
 
     @Subscribe

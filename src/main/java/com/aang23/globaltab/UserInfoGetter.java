@@ -4,12 +4,16 @@ import me.lucko.luckperms.api.Contexts;
 
 public class UserInfoGetter {
     public static String getPrefixFromUsername(String username) {
-        if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
-            Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
-                    .get();
-            return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix()
-                    .toString();
+        if (GlobalTab.server.getPluginManager().isLoaded("luckperms")) {
+            if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
+                Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
+                        .get();
+                return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix()
+                        .toString();
+            } else
+                return null;
         } else
             return null;
     }
+
 }
