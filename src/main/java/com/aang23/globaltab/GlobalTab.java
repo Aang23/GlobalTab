@@ -38,8 +38,7 @@ public class GlobalTab {
         ConfigManager.setupConfig();
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerHandler(), 1 * 1000, 1 * 1000);
-
+        timer.scheduleAtFixedRate(new TimerHandler(), Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000, Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000);
     }
 
     @Subscribe

@@ -19,6 +19,7 @@ public class ConfigManager {
         // Configure settings
         config.put("header", "&4This is a header");
         config.put("footer", "&7This is a footer");
+        config.put("updatedelay", "1");
 
         // Write & load config
         File f = new File(GlobalTab.configspath.toString() + "/config.txt");
