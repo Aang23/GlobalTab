@@ -17,16 +17,12 @@ public class TimerHandler extends TimerTask {
 				for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
 					Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
 
-					GameProfile currentProfile = GameProfile.forOfflinePlayer(currentPlayer.getUsername())
-							.withId(currentPlayer.getUniqueId())
-							.withProperties(currentPlayer.getGameProfileProperties());
-
 					TabListEntry currentEntry = TabListEntry
-							.builder().profile(currentProfile).displayName(TabBuilder
+							.builder().profile(currentPlayer.getGameProfile()).displayName(TabBuilder
 									.formatTab((String) ConfigManager.config.get("player_format"), currentPlayer))
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
-					currentPlayerToProcess.getTabList().removeEntry(currentProfile.getId());
+					currentPlayerToProcess.getTabList().removeEntry(currentPlayer.getUniqueId());
 					currentPlayerToProcess.getTabList().addEntry(currentEntry);
 				}
 			}
