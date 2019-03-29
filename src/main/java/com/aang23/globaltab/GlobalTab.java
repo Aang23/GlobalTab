@@ -2,6 +2,7 @@ package com.aang23.globaltab;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
@@ -16,6 +17,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import java.nio.file.Path;
 import java.util.Timer;
 import net.kyori.text.serializer.ComponentSerializers;
@@ -38,7 +40,8 @@ public class GlobalTab {
         ConfigManager.setupConfig();
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerHandler(), Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000, Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000);
+        timer.scheduleAtFixedRate(new TimerHandler(), Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000,
+                Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000);
     }
 
     @Subscribe
@@ -51,5 +54,15 @@ public class GlobalTab {
     @Subscribe
     public void onInitialization(ProxyInitializeEvent event) {
         luckpermsapi = LuckPerms.getApi();
+    }
+
+    @Subscribe
+    public void onLeave(DisconnectEvent event) {
+        if (server.getPlayerCount() > 0) {
+            for (int i = 0; i < server.getPlayerCount(); i++) {
+                Player currentPlayerToProcess = (Player) server.getAllPlayers().toArray()[i];
+                currentPlayerToProcess.getTabList().removeEntry(event.getPlayer().getUniqueId());
+            }
+        }
     }
 }
