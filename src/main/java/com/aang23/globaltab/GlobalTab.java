@@ -4,8 +4,15 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
+
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.Contexts;
+import me.lucko.luckperms.api.LuckPermsApi;
+import me.lucko.luckperms.api.context.ContextSet;
+
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.EventManager;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
@@ -18,6 +25,7 @@ public class GlobalTab {
     public static ProxyServer server;
     public static Logger logger;
     public static Path configspath;
+    public static LuckPermsApi luckpermsapi;
 
     @Inject
     public GlobalTab(ProxyServer lserver, CommandManager commandManager, EventManager eventManager, Logger llogger,
@@ -27,9 +35,11 @@ public class GlobalTab {
         logger = llogger;
         configspath = configpaths;
         logger.info("Loading GlobalTab");
+        ConfigManager.setupConfig();
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerHandler(), 1 * 1000, 1 * 1000);
+
     }
 
     @Subscribe
@@ -37,5 +47,10 @@ public class GlobalTab {
         event.getPlayer().getTabList().setHeaderAndFooter(
                 ComponentSerializers.LEGACY.deserialize(ConfigManager.config.get("header"), '&'),
                 ComponentSerializers.LEGACY.deserialize(ConfigManager.config.get("footer"), '&'));
+    }
+
+    @Subscribe
+    public void onInitialization(ProxyInitializeEvent event) {
+        luckpermsapi = LuckPerms.getApi();
     }
 }

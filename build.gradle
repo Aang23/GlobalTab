@@ -1,12 +1,12 @@
 plugins {
     id 'java'
+    id 'eclipse'
 }
 
 group 'com.aang23'
 version '1.0'
 
 sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -18,4 +18,5 @@ repositories {
 
 dependencies {
     compileOnly 'com.velocitypowered:velocity-api:1.0-SNAPSHOT'
+    compile 'me.lucko.luckperms:luckperms-api:4.3'
 }

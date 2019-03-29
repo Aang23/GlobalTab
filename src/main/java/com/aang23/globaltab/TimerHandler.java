@@ -7,6 +7,7 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 
 import net.kyori.text.TextComponent;
+import net.kyori.text.serializer.ComponentSerializers;
 
 public class TimerHandler extends TimerTask {
 	@Override
@@ -24,7 +25,9 @@ public class TimerHandler extends TimerTask {
 							.withProperties(currentPlayer.getGameProfileProperties());
 
 					TabListEntry currentEntry = TabListEntry.builder().profile(currentProfile)
-							.displayName(TextComponent.of(currentPlayer.getUsername()))
+							.displayName(ComponentSerializers.LEGACY
+									.deserialize(UserInfoGetter.getPrefixFromUsername(currentPlayer.getUsername()) + " "
+											+ currentPlayer.getUsername(), '&'))
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
 					currentPlayerToProcess.getTabList().removeEntry(currentProfile.getId());
