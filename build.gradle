@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'eclipse'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group 'com.aang23'
@@ -18,5 +19,6 @@ repositories {
 
 dependencies {
     compileOnly 'com.velocitypowered:velocity-api:1.0-SNAPSHOT'
-    compile 'me.lucko.luckperms:luckperms-api:4.3'
+    compileOnly 'me.lucko.luckperms:luckperms-api:4.3'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 }

@@ -37,18 +37,20 @@ public class GlobalTab {
         logger = llogger;
         configspath = configpaths;
         logger.info("Loading GlobalTab");
+        
         ConfigManager.setupConfig();
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerHandler(), Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000,
-                Integer.parseInt(ConfigManager.config.get("updatedelay")) * 1000);
+        timer.scheduleAtFixedRate(new TimerHandler(),
+                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
+                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
     }
 
     @Subscribe
     public void onPreLogin(ServerConnectedEvent event) {
         event.getPlayer().getTabList().setHeaderAndFooter(
-                ComponentSerializers.LEGACY.deserialize(ConfigManager.config.get("header"), '&'),
-                ComponentSerializers.LEGACY.deserialize(ConfigManager.config.get("footer"), '&'));
+                ComponentSerializers.LEGACY.deserialize((String) ConfigManager.config.get("header"), '&'),
+                ComponentSerializers.LEGACY.deserialize((String) ConfigManager.config.get("footer"), '&'));
     }
 
     @Subscribe

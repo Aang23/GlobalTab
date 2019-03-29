@@ -2,55 +2,59 @@ package com.aang23.globaltab;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 
 public class ConfigManager {
-    public static Map<String, String> config = new HashMap<String, String>();
+    public static JSONObject config = null;
 
     public static void setupConfig() {
         if (!GlobalTab.configspath.toFile().exists())
             GlobalTab.configspath.toFile().mkdirs();
-
-        // Configure settings
-        config.put("header", "&4This is a header");
-        config.put("footer", "&7This is a footer");
-        config.put("updatedelay", "1");
-        config.put("player_format", "%prefix% %username%");
-
-        // Write & load config
-        File f = new File(GlobalTab.configspath.toString() + "/config.txt");
-        if (f.exists() && !f.isDirectory()) {
-            Map<String, String> fileContent = new HashMap<String, String>();
-            Properties properties = new Properties();
+        if (!new File(GlobalTab.configspath.toString() + "/globaltab.json").exists()) {
             try {
-                properties.load(new FileInputStream(GlobalTab.configspath.toString() + "/config.txt"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for (String key : properties.stringPropertyNames()) {
-                fileContent.put(key, properties.get(key).toString());
-            }
-            config = fileContent;
-        } else {
-            Map<String, String> fileContent = config;
-            Properties properties = new Properties();
-            for (Map.Entry<String, String> entry : fileContent.entrySet()) {
-                properties.put(entry.getKey(), entry.getValue());
-            }
-            try {
-                properties.store(new FileOutputStream(GlobalTab.configspath.toString() + "/config.txt"), null);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                writeInitialConfig();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
             }
         }
+
+        Object configobj = null;
+        try {
+            configobj = new JSONParser().parse(new FileReader(GlobalTab.configspath.toString() + "/globaltab.json"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        config = (JSONObject) configobj;
+    }
+
+    private static void writeInitialConfig() throws FileNotFoundException {
+        JSONObject configfile = new JSONObject();
+
+        configfile.put("header", "&4This is a header");
+        configfile.put("footer", "&7This is a footer");
+        configfile.put("updatedelay", "1");
+        configfile.put("player_format", "%prefix% %username%");
+
+        PrintWriter pw = new PrintWriter(GlobalTab.configspath.toString() + "/globaltab.json");
+        pw.write(configfile.toJSONString());
+
+        pw.flush();
+        pw.close();
     }
 }
