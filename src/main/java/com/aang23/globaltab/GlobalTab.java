@@ -5,12 +5,8 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
-
 import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.context.ContextSet;
-
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -37,7 +33,7 @@ public class GlobalTab {
         logger = llogger;
         configspath = configpaths;
         logger.info("Loading GlobalTab");
-        
+
         ConfigManager.setupConfig();
 
         Timer timer = new Timer();

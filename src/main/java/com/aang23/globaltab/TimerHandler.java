@@ -6,9 +6,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 
-import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.ComponentSerializers;
-
 public class TimerHandler extends TimerTask {
 	@Override
 	public void run() {
