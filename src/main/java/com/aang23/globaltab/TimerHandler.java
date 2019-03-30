@@ -19,7 +19,7 @@ public class TimerHandler extends TimerTask {
 
 					TabListEntry currentEntry = TabListEntry
 							.builder().profile(currentPlayer.getGameProfile()).displayName(TabBuilder
-									.formatTab((String) ConfigManager.config.get("player_format"), currentPlayer))
+									.formatPlayerTab((String) ConfigManager.config.get("player_format"), currentPlayer))
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
 					currentPlayerToProcess.getTabList().removeEntry(currentPlayer.getUniqueId());
