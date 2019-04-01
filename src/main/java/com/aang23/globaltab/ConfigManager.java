@@ -47,6 +47,7 @@ public class ConfigManager {
         configfile.put("footer", "&7This is a footer");
         configfile.put("updatedelay", "1");
         configfile.put("player_format", "%prefix% %username%");
+        configfile.put("customtabsenabled", true);
 
         List<String> customTabs = new ArrayList<String>(); 
         customTabs.add("&3Your ping : &e%ping%");

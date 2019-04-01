@@ -27,17 +27,19 @@ public class TimerHandler extends TimerTask {
 					currentPlayerToProcess.getTabList().addEntry(currentEntry);
 				}
 
-				List<String> customtabs = (List<String>) ConfigManager.config.get("customtabs");
+				if ((boolean) ConfigManager.config.get("customtabsenabled")) {
+					List<String> customtabs = (List<String>) ConfigManager.config.get("customtabs");
 
-				for (int i3 = 0; i3 < customtabs.size(); i3++) {
-					GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab"+String.valueOf(i3));
+					for (int i3 = 0; i3 < customtabs.size(); i3++) {
+						GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
 
-					TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
-							.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
-							.tabList(currentPlayerToProcess.getTabList()).build();
+						TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
+								.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
+								.tabList(currentPlayerToProcess.getTabList()).build();
 
-					currentPlayerToProcess.getTabList().removeEntry(tabProfile.getId());
-					currentPlayerToProcess.getTabList().addEntry(currentEntry);
+						currentPlayerToProcess.getTabList().removeEntry(tabProfile.getId());
+						currentPlayerToProcess.getTabList().addEntry(currentEntry);
+					}
 				}
 			}
 		}
