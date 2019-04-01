@@ -11,7 +11,7 @@ public class TabBuilder {
         raw = raw.replace("%username%", player.getUsername());
         raw = raw.replace("%prefix%", UserInfoGetter.getPrefixFromUsername(player.getUsername()));
         raw = raw.replace("%suffix%", UserInfoGetter.getSuffixFromUsername(player.getUsername()));
-        raw = raw.replace("%server%", player.getCurrentServer().get().getServerInfo().getName());
+        raw = raw.replace("%server%", getCurrentServer(player));
 
         return ComponentSerializers.LEGACY.deserialize(raw, '&');
     }
@@ -29,6 +29,7 @@ public class TabBuilder {
         raw = raw.replace("%motd%", GlobalTab.server.getConfiguration().getMotdComponent().toString());
         raw = raw.replace("%uuid%", player.getUniqueId().toString());
         raw = raw.replace("%ip%", player.getRemoteAddress().toString());
+        raw = raw.replace("%balance%", getBalance(player));
 
         return ComponentSerializers.LEGACY.deserialize(raw, '&');
     }
@@ -36,6 +37,13 @@ public class TabBuilder {
     private static String getCurrentServer(Player player) {
         if (player.getCurrentServer().isPresent())
             return player.getCurrentServer().get().getServerInfo().getName();
+        else
+            return "null";
+    }
+
+    private static String getBalance(Player player) {
+        if (GlobalTab.playerBalances.containsKey(player.getUsername()))
+            return String.valueOf(GlobalTab.playerBalances.get(player.getUsername()));
         else
             return "null";
     }

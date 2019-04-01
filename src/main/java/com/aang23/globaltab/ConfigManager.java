@@ -50,6 +50,7 @@ public class ConfigManager {
         List<String> customTabs = new ArrayList<String>(); 
         customTabs.add("&3Your ping : &e%ping%");
         customTabs.add("&3Current server : &e%server%");
+        customTabs.add("&3Balance : &e%balance%");
 
         configfile.put("customtabs", customTabs);
 
