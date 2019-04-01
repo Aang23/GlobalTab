@@ -1,5 +1,6 @@
 package com.aang23.globaltab;
 
+import java.util.List;
 import java.util.TimerTask;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -23,6 +24,19 @@ public class TimerHandler extends TimerTask {
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
 					currentPlayerToProcess.getTabList().removeEntry(currentPlayer.getUniqueId());
+					currentPlayerToProcess.getTabList().addEntry(currentEntry);
+				}
+
+				List<String> customtabs = (List<String>) ConfigManager.config.get("customtabs");
+
+				for (int i3 = 0; i3 < customtabs.size(); i3++) {
+					GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab"+String.valueOf(i3));
+
+					TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
+							.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
+							.tabList(currentPlayerToProcess.getTabList()).build();
+
+					currentPlayerToProcess.getTabList().removeEntry(tabProfile.getId());
 					currentPlayerToProcess.getTabList().addEntry(currentEntry);
 				}
 			}

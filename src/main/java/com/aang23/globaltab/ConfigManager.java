@@ -3,6 +3,10 @@ package com.aang23.globaltab;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -43,6 +47,12 @@ public class ConfigManager {
         configfile.put("footer", "&7This is a footer");
         configfile.put("updatedelay", "1");
         configfile.put("player_format", "%prefix% %username%");
+
+        List<String> customTabs = new ArrayList<String>(); 
+        customTabs.add("&3Your ping : &e%ping%");
+        customTabs.add("&3Current server : &e%server%");
+
+        configfile.put("customtabs", customTabs);
 
         PrintWriter pw = new PrintWriter(GlobalTab.configspath.toString() + "/globaltab.json");
         pw.write(configfile.toJSONString());
