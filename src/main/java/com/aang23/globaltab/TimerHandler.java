@@ -41,6 +41,10 @@ public class TimerHandler extends TimerTask {
 						currentPlayerToProcess.getTabList().addEntry(currentEntry);
 					}
 				}
+
+				currentPlayerToProcess.getTabList().setHeaderAndFooter(
+                TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"), currentPlayerToProcess),
+                TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"), currentPlayerToProcess));
 			}
 		}
 	}

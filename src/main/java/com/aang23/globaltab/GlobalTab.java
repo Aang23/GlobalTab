@@ -11,12 +11,10 @@ import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import java.nio.file.Path;
 import java.util.Timer;
-import net.kyori.text.serializer.ComponentSerializers;
 
 @Plugin(id = "globaltab", name = "GlobalTab", version = "1.0", description = "A plugin", authors = { "Aang23" })
 public class GlobalTab {
@@ -40,13 +38,6 @@ public class GlobalTab {
         timer.scheduleAtFixedRate(new TimerHandler(),
                 Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
                 Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
-    }
-
-    @Subscribe
-    public void onPreLogin(ServerConnectedEvent event) {
-        event.getPlayer().getTabList().setHeaderAndFooter(
-                ComponentSerializers.LEGACY.deserialize((String) ConfigManager.config.get("header"), '&'),
-                ComponentSerializers.LEGACY.deserialize((String) ConfigManager.config.get("footer"), '&'));
     }
 
     @Subscribe

@@ -41,8 +41,8 @@ public class ConfigManager {
     private static void writeInitialConfig() throws FileNotFoundException {
         JSONObject configfile = new JSONObject();
 
-        configfile.put("header", "&4This is a header");
-        configfile.put("footer", "&7This is a footer");
+        configfile.put("header", "&4Welcome, &6%username%&4 on");
+        configfile.put("footer", "&7the server !");
         configfile.put("updatedelay", "1");
         configfile.put("player_format", "%prefix% %username%");
         configfile.put("customtabsenabled", true);
