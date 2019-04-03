@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import com.cedarsoftware.util.io.JsonWriter;
 
 public class ConfigManager {
     public static JSONObject config = null;
@@ -47,7 +48,7 @@ public class ConfigManager {
         configfile.put("player_format", "%prefix% %username%");
         configfile.put("customtabsenabled", true);
 
-        List<String> customTabs = new ArrayList<String>(); 
+        List<String> customTabs = new ArrayList<String>();
         customTabs.add("&3Your ping : &e%ping%");
         customTabs.add("&3Current server : &e%server%");
         customTabs.add("&3Balance : &e%balance%");
@@ -55,7 +56,7 @@ public class ConfigManager {
         configfile.put("customtabs", customTabs);
 
         PrintWriter pw = new PrintWriter(GlobalTab.configspath.toString() + "/globaltab.json");
-        pw.write(configfile.toJSONString());
+        pw.write(JsonWriter.formatJson(configfile.toJSONString()));
 
         pw.flush();
         pw.close();
