@@ -23,6 +23,9 @@ public class TimerHandler extends TimerTask {
 			for (int i = 0; i < server.getPlayerCount(); i++) {
 				Player currentPlayerToProcess = (Player) server.getAllPlayers().toArray()[i];
 
+				for (TabListEntry current : currentPlayerToProcess.getTabList().getEntries())
+					currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
+
 				for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
 					Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
 
@@ -31,7 +34,6 @@ public class TimerHandler extends TimerTask {
 									.formatPlayerTab((String) ConfigManager.config.get("player_format"), currentPlayer))
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
-					currentPlayerToProcess.getTabList().removeEntry(currentPlayer.getUniqueId());
 					currentPlayerToProcess.getTabList().addEntry(currentEntry);
 				}
 
@@ -45,7 +47,6 @@ public class TimerHandler extends TimerTask {
 								.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
 								.tabList(currentPlayerToProcess.getTabList()).build();
 
-						currentPlayerToProcess.getTabList().removeEntry(tabProfile.getId());
 						currentPlayerToProcess.getTabList().addEntry(currentEntry);
 					}
 				}
