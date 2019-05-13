@@ -42,6 +42,8 @@ public class GlobalTab {
 
         ConfigManager.setupConfig();
 
+        commandManager.register(new CommandRestart(), "restarttab");
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerHandler(),
                 Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,

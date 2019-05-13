@@ -8,8 +8,16 @@ import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 
 public class TimerHandler extends TimerTask {
+
+	public static boolean stop = false;
+
 	@Override
 	public void run() {
+		if (stop) {
+			this.cancel();
+			stop = false;
+		}
+
 		ProxyServer server = GlobalTab.server;
 		if (server.getPlayerCount() > 0) {
 			for (int i = 0; i < server.getPlayerCount(); i++) {
@@ -43,8 +51,9 @@ public class TimerHandler extends TimerTask {
 				}
 
 				currentPlayerToProcess.getTabList().setHeaderAndFooter(
-                TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"), currentPlayerToProcess),
-                TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"), currentPlayerToProcess));
+						TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"), currentPlayerToProcess),
+						TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),
+								currentPlayerToProcess));
 			}
 		}
 	}

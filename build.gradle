@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.velocitypowered:velocity-api:1.0-SNAPSHOT'
+    compileOnly 'com.velocitypowered:velocity-api:1.0.0-SNAPSHOT'
     compileOnly 'me.lucko.luckperms:luckperms-api:4.3'
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compile group: 'com.cedarsoftware', name: 'json-io', version: '4.5.0'

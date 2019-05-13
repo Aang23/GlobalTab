@@ -3,7 +3,7 @@ package com.aang23.globaltab;
 import com.velocitypowered.api.proxy.Player;
 
 import net.kyori.text.TextComponent;
-import net.kyori.text.serializer.ComponentSerializers;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 
 public class TabBuilder {
     public static TextComponent formatPlayerTab(String raw, Player player) {
@@ -13,7 +13,7 @@ public class TabBuilder {
         raw = raw.replace("%suffix%", UserInfoGetter.getSuffixFromUsername(player.getUsername()));
         raw = raw.replace("%server%", getCurrentServer(player));
 
-        return ComponentSerializers.LEGACY.deserialize(raw, '&');
+        return LegacyComponentSerializer.INSTANCE.deserialize(raw, '&');
     }
 
     public static TextComponent formatCustomTab(String raw, Player player) {
@@ -31,7 +31,7 @@ public class TabBuilder {
         raw = raw.replace("%ip%", player.getRemoteAddress().toString());
         raw = raw.replace("%balance%", getBalance(player));
 
-        return ComponentSerializers.LEGACY.deserialize(raw, '&');
+        return LegacyComponentSerializer.INSTANCE.deserialize(raw, '&');
     }
 
     private static String getCurrentServer(Player player) {
