@@ -42,7 +42,7 @@ public class GlobalTab {
 
         ConfigManager.setupConfig();
 
-        commandManager.register(new CommandRestart(), "restarttab");
+        commandManager.register(new CommandGlobalTab(), "globaltab");
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerHandler(),
