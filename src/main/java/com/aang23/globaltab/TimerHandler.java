@@ -34,6 +34,8 @@ public class TimerHandler extends TimerTask {
 									.formatPlayerTab((String) ConfigManager.config.get("player_format"), currentPlayer))
 							.tabList(currentPlayerToProcess.getTabList()).build();
 
+					// Just to make sure...
+					currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
 					currentPlayerToProcess.getTabList().addEntry(currentEntry);
 				}
 
@@ -47,6 +49,8 @@ public class TimerHandler extends TimerTask {
 								.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
 								.tabList(currentPlayerToProcess.getTabList()).build();
 
+						// Just to make sure...
+						currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
 						currentPlayerToProcess.getTabList().addEntry(currentEntry);
 					}
 				}

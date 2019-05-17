@@ -51,10 +51,9 @@ public class TabBuilder {
 
     private static String getServerPlayerCount(Player player) {
         RegisteredServer server = null;
-        server = player.getCurrentServer().get().getServer();
 
-        if (server != null)
-            return String.valueOf(server.getPlayersConnected().size());
+        if (player.getCurrentServer().isPresent())
+            return String.valueOf(player.getCurrentServer().get().getServer().getPlayersConnected().size());
         else
             return "null";
     }
