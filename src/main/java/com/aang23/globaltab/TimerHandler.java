@@ -20,45 +20,47 @@ public class TimerHandler extends TimerTask {
 
 		ProxyServer server = GlobalTab.server;
 		if (server.getPlayerCount() > 0) {
-			for (int i = 0; i < server.getPlayerCount(); i++) {
-				Player currentPlayerToProcess = (Player) server.getAllPlayers().toArray()[i];
+			for (Player currentPlayerToProcess : server.getAllPlayers()) {
+				if (ConfigManager.isServerAllowed(currentPlayerToProcess.getCurrentServer())) {
 
-				for (TabListEntry current : currentPlayerToProcess.getTabList().getEntries())
-					currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
+					for (TabListEntry current : currentPlayerToProcess.getTabList().getEntries())
+						currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
 
-				for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
-					Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
+					for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
+						Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
 
-					TabListEntry currentEntry = TabListEntry
-							.builder().profile(currentPlayer.getGameProfile()).displayName(TabBuilder
-									.formatPlayerTab((String) ConfigManager.config.get("player_format"), currentPlayer))
-							.tabList(currentPlayerToProcess.getTabList()).build();
-
-					// Just to make sure...
-					currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
-					currentPlayerToProcess.getTabList().addEntry(currentEntry);
-				}
-
-				if ((boolean) ConfigManager.config.get("customtabsenabled")) {
-					List<String> customtabs = (List<String>) ConfigManager.config.get("customtabs");
-
-					for (int i3 = 0; i3 < customtabs.size(); i3++) {
-						GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
-
-						TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
-								.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
+						TabListEntry currentEntry = TabListEntry.builder().profile(currentPlayer.getGameProfile())
+								.displayName(TabBuilder.formatPlayerTab(
+										(String) ConfigManager.config.get("player_format"), currentPlayer))
 								.tabList(currentPlayerToProcess.getTabList()).build();
 
 						// Just to make sure...
 						currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
 						currentPlayerToProcess.getTabList().addEntry(currentEntry);
 					}
-				}
 
-				currentPlayerToProcess.getTabList().setHeaderAndFooter(
-						TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"), currentPlayerToProcess),
-						TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),
-								currentPlayerToProcess));
+					if (ConfigManager.customTabsEnabled()) {
+						List<String> customtabs = ConfigManager.getCustomTabs();
+
+						for (int i3 = 0; i3 < customtabs.size(); i3++) {
+							GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
+
+							TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
+									.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
+									.tabList(currentPlayerToProcess.getTabList()).build();
+
+							// Just to make sure...
+							currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
+							currentPlayerToProcess.getTabList().addEntry(currentEntry);
+						}
+					}
+
+					currentPlayerToProcess.getTabList().setHeaderAndFooter(
+							TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"),
+									currentPlayerToProcess),
+							TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),
+									currentPlayerToProcess));
+				}
 			}
 		}
 	}
