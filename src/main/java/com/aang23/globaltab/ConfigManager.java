@@ -81,7 +81,10 @@ public class ConfigManager {
         else
             return false;
 
-        return !disabledServers.contains(name);
+        if (disabledServers != null)
+            return !disabledServers.contains(name);
+        else
+            return true;
     }
 
     public static List<String> getCustomTabs() {
