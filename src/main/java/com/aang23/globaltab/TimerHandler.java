@@ -35,8 +35,10 @@ public class TimerHandler extends TimerTask {
 								.tabList(currentPlayerToProcess.getTabList()).build();
 
 						// Just to make sure...
-						currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
-						currentPlayerToProcess.getTabList().addEntry(currentEntry);
+						if (!currentPlayerToProcess.getTabList().getEntries().contains(currentEntry)) {
+							currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
+							currentPlayerToProcess.getTabList().addEntry(currentEntry);
+						}
 					}
 
 					if (ConfigManager.customTabsEnabled()) {
@@ -50,8 +52,10 @@ public class TimerHandler extends TimerTask {
 									.tabList(currentPlayerToProcess.getTabList()).build();
 
 							// Just to make sure...
-							currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
-							currentPlayerToProcess.getTabList().addEntry(currentEntry);
+							if (!currentPlayerToProcess.getTabList().getEntries().contains(currentEntry)) {
+								currentPlayerToProcess.getTabList().removeEntry(currentEntry.getProfile().getId());
+								currentPlayerToProcess.getTabList().addEntry(currentEntry);
+							}
 						}
 					}
 
