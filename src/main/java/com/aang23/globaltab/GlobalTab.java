@@ -8,6 +8,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
+import com.velocitypowered.api.proxy.player.TabList;
+import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
@@ -23,10 +25,13 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Plugin(id = "globaltab", name = "GlobalTab", version = "1.0", description = "A plugin", authors = { "Aang23" })
@@ -101,6 +106,29 @@ public class GlobalTab {
                 playerBalances.replace(username, balance);
             else
                 playerBalances.put(username, balance);
+        }
+    }
+
+    public static void insertIntoTabListCleanly(TabList list, TabListEntry entry, List<UUID> toKeep) {
+        UUID inUUID = entry.getProfile().getId();
+        List<UUID> containedUUIDs = new ArrayList<UUID>();
+        Map<UUID, TabListEntry> cache = new HashMap<UUID, TabListEntry>();
+        for (TabListEntry current : list.getEntries()) {
+            containedUUIDs.add(current.getProfile().getId());
+            cache.put(current.getProfile().getId(), current);
+        }
+        if (!containedUUIDs.contains(inUUID)) {
+            list.addEntry(entry);
+            toKeep.add(inUUID);
+            return;
+        } else {
+            TabListEntry currentEntr = cache.get(inUUID);
+            if (!currentEntr.getDisplayName().equals(entry.getDisplayName())) {
+                list.removeEntry(inUUID);
+                list.addEntry(entry);
+                toKeep.add(inUUID);
+            } else
+                toKeep.add(inUUID);
         }
     }
 }
