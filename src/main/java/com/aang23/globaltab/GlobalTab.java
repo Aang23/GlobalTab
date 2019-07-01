@@ -72,12 +72,12 @@ public class GlobalTab {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        server.getChannelRegistrar().register(new LegacyChannelIdentifier("GlobalTab"));
+        server.getChannelRegistrar().register(new LegacyChannelIdentifier("globaltab:sync"));
     }
 
     @Subscribe
     public void onPluginMessage(PluginMessageEvent event) {
-        if (!event.getIdentifier().equals(new LegacyChannelIdentifier("GlobalTab"))) {
+        if (!event.getIdentifier().equals(new LegacyChannelIdentifier("globaltab:sync"))) {
             return;
         }
 
