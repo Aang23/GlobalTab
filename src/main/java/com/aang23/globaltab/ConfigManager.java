@@ -18,8 +18,8 @@ import com.velocitypowered.api.proxy.ServerConnection;
 public class ConfigManager {
     public static JSONObject config = null;
 
-    private static List<String> disabledServers = new ArrayList<String>();
-    private static List<String> customTabs = new ArrayList<String>();
+    private static List<String> disabledServers = new ArrayList<>();
+    private static List<String> customTabs = new ArrayList<>();
 
     public static void setupConfig() {
         if (!GlobalTab.configspath.toFile().exists())
@@ -33,15 +33,13 @@ public class ConfigManager {
         }
 
         Object configobj = null;
+
         try {
             configobj = new JSONParser().parse(new FileReader(GlobalTab.configspath.toString() + "/globaltab.json"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
         config = (JSONObject) configobj;
 
         disabledServers = (List<String>) ConfigManager.config.get("disabled_servers");
@@ -75,16 +73,19 @@ public class ConfigManager {
     }
 
     public static boolean isServerAllowed(Optional<ServerConnection> server) {
-        String name = null;
-        if (server.isPresent())
-            name = server.get().getServerInfo().getName();
-        else
-            return false;
+        String name;
 
-        if (disabledServers != null)
+        if (server.isPresent()) {
+            name = server.get().getServerInfo().getName();
+        } else {
+            return false;
+        }
+
+        if (disabledServers != null) {
             return !disabledServers.contains(name);
-        else
+        } else {
             return true;
+        }
     }
 
     public static List<String> getCustomTabs() {

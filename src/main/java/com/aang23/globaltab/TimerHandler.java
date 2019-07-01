@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.TabList;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
 
@@ -25,9 +26,11 @@ public class TimerHandler extends TimerTask {
 			ProxyServer server = GlobalTab.server;
 			if (server.getPlayerCount() > 0) {
 				for (Player currentPlayerToProcess : server.getAllPlayers()) {
+					TabList tabList = currentPlayerToProcess.getTabList();
+
 					if (ConfigManager.isServerAllowed(currentPlayerToProcess.getCurrentServer())) {
 
-						List<UUID> toKeep = new ArrayList<UUID>();
+						List<UUID> toKeep = new ArrayList<>();
 
 						for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
 							Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
@@ -35,9 +38,9 @@ public class TimerHandler extends TimerTask {
 							TabListEntry currentEntry = TabListEntry.builder().profile(currentPlayer.getGameProfile())
 									.displayName(TabBuilder.formatPlayerTab(
 											(String) ConfigManager.config.get("player_format"), currentPlayer))
-									.tabList(currentPlayerToProcess.getTabList()).build();
+									.tabList(tabList).build();
 
-							GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
+							GlobalTab.insertIntoTabListCleanly(tabList, currentEntry,
 									toKeep);
 						}
 
@@ -45,24 +48,24 @@ public class TimerHandler extends TimerTask {
 							List<String> customtabs = ConfigManager.getCustomTabs();
 
 							for (int i3 = 0; i3 < customtabs.size(); i3++) {
-								GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
+								GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + i3);
 
 								TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
 										.displayName(
 												TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
-										.tabList(currentPlayerToProcess.getTabList()).build();
+										.tabList(tabList).build();
 
-								GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
+								GlobalTab.insertIntoTabListCleanly(tabList, currentEntry,
 										toKeep);
 							}
 						}
 
-						for (TabListEntry current : currentPlayerToProcess.getTabList().getEntries()) {
+						for (TabListEntry current : tabList.getEntries()) {
 							if (!toKeep.contains(current.getProfile().getId()))
-								currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
+								tabList.removeEntry(current.getProfile().getId());
 						}
 
-						currentPlayerToProcess.getTabList().setHeaderAndFooter(
+						tabList.setHeaderAndFooter(
 								TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"),
 										currentPlayerToProcess),
 								TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),

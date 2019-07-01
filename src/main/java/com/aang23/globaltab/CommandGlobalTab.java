@@ -17,6 +17,7 @@ public class CommandGlobalTab implements Command {
                 TimerHandler.stop = true;
 
                 Timer timer = new Timer();
+
                 timer.scheduleAtFixedRate(new TimerHandler(),
                         Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
                         Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
@@ -27,7 +28,8 @@ public class CommandGlobalTab implements Command {
 
                 source.sendMessage(TextComponent.of("Reloaded the configuration file !").color(TextColor.GREEN));
             }
-        } else
+        } else {
             source.sendMessage(TextComponent.of("Usage : /globaltab restart/config").color(TextColor.RED));
+        }
     }
 }
