@@ -7,12 +7,14 @@ import java.util.UUID;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.player.TabList;
 import com.velocitypowered.api.proxy.player.TabListEntry;
 import com.velocitypowered.api.util.GameProfile;
+import net.kyori.text.TextComponent;
 
 public class TimerHandler extends TimerTask {
 
-	public static boolean stop = false;
+	static boolean stop = false;
 
 	@Override
 	public void run() {
@@ -21,57 +23,63 @@ public class TimerHandler extends TimerTask {
 			stop = false;
 		}
 
-		try {
-			ProxyServer server = GlobalTab.server;
-			if (server.getPlayerCount() > 0) {
-				for (Player currentPlayerToProcess : server.getAllPlayers()) {
-					if (ConfigManager.isServerAllowed(currentPlayerToProcess.getCurrentServer())) {
+		ProxyServer server = GlobalTab.server;
 
-						List<UUID> toKeep = new ArrayList<UUID>();
+		if (server.getPlayerCount() > 0) {
+			for (Player currentPlayer : server.getAllPlayers()) {
+				TabList tabList = currentPlayer.getTabList();
 
-						for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
-							Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
+				if (!ConfigManager.isServerAllowed(currentPlayer.getCurrentServer())) {
+					continue;
+				}
 
-							TabListEntry currentEntry = TabListEntry.builder().profile(currentPlayer.getGameProfile())
-									.displayName(TabBuilder.formatPlayerTab(
-											(String) ConfigManager.config.get("player_format"), currentPlayer))
-									.tabList(currentPlayerToProcess.getTabList()).build();
+				List<UUID> toKeep = new ArrayList<>();
 
-							GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
-									toKeep);
-						}
+				// Real players
+				for (Player tabPlayer : server.getAllPlayers()) {
+					String playerFormat = (String) ConfigManager.config.get("player_format");
 
-						if (ConfigManager.customTabsEnabled()) {
-							List<String> customtabs = ConfigManager.getCustomTabs();
+					TabListEntry currentEntry = TabListEntry.builder()
+							.profile(tabPlayer.getGameProfile())
+							.displayName(TabBuilder.formatPlayerTab(playerFormat, tabPlayer))
+							.tabList(tabList).build();
 
-							for (int i3 = 0; i3 < customtabs.size(); i3++) {
-								GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
+					GlobalTab.insertIntoTabListCleanly(tabList, currentEntry, toKeep);
+				}
 
-								TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
-										.displayName(
-												TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
-										.tabList(currentPlayerToProcess.getTabList()).build();
+				// Fake players
+				if (ConfigManager.customTabsEnabled()) {
+					List<String> customtabs = ConfigManager.getCustomTabs();
 
-								GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
-										toKeep);
-							}
-						}
+					for (int i3 = 0; i3 < customtabs.size(); i3++) {
+						GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + i3);
 
-						for (TabListEntry current : currentPlayerToProcess.getTabList().getEntries()) {
-							if (!toKeep.contains(current.getProfile().getId()))
-								currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
-						}
+						TabListEntry currentEntry = TabListEntry.builder()
+								.profile(tabProfile)
+								.displayName(TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayer))
+								.tabList(tabList).build();
 
-						currentPlayerToProcess.getTabList().setHeaderAndFooter(
-								TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"),
-										currentPlayerToProcess),
-								TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),
-										currentPlayerToProcess));
+						GlobalTab.insertIntoTabListCleanly(tabList, currentEntry, toKeep);
 					}
 				}
+
+				// Update entries in tab list
+				for (TabListEntry current : tabList.getEntries()) {
+					if (!toKeep.contains(current.getProfile().getId()))
+						tabList.removeEntry(current.getProfile().getId());
+				}
+
+				// Tab list header
+				String header = (String) ConfigManager.config.get("header");
+				TextComponent headerComponent = TabBuilder.formatCustomTab(header, currentPlayer);
+
+				// Tab list footer
+				String footer = (String) ConfigManager.config.get("footer");
+				TextComponent footerComponent = TabBuilder.formatCustomTab(footer, currentPlayer);
+
+				// Set tab list headers and footers
+				tabList.setHeaderAndFooter(headerComponent, footerComponent);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }

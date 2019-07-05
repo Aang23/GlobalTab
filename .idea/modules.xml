@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalTab.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalTab.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalTab.main.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalTab.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalTab.test.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalTab.test.iml" />
+    </modules>
+  </component>
+</project>

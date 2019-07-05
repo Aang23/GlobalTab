@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="com.aang23" externalSystemModuleType="sourceSet" externalSystemModuleVersion="1.0" linkedProjectId="GlobalTab:test" linkedProjectPath="$MODULE_DIR$/../.." rootProjectPath="$MODULE_DIR$/../.." />
+  <component name="TestModuleProperties" production-module="GlobalTab.main" />
+</module>
