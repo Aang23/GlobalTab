@@ -3,6 +3,7 @@ package com.aang23.globaltab;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
@@ -14,6 +15,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.api.proxy.server.ServerPing;
 
+import com.velocitypowered.api.scheduler.ScheduledTask;
+import com.velocitypowered.api.scheduler.Scheduler;
 import org.slf4j.Logger;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
@@ -33,39 +36,44 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "globaltab", name = "GlobalTab", version = "1.0", description = "A plugin", authors = { "Aang23" })
 public class GlobalTab {
+
+
     public static ProxyServer server;
     public static Logger logger;
     public static Path configspath;
     public static LuckPermsApi luckpermsapi;
 
+
+    private ScheduledTask task;
+
     public static Map<String, Double> playerBalances = new HashMap<String, Double>();
 
     @Inject
-    public GlobalTab(ProxyServer lserver, CommandManager commandManager, EventManager eventManager, Logger llogger,
-            @DataDirectory Path configpaths) {
+    public GlobalTab(ProxyServer lserver, CommandManager commandManager,Logger llogger, @DataDirectory Path configpaths) {
 
         server = lserver;
-        logger = llogger;
-        configspath = configpaths;
-        logger.info("Loading GlobalTab");
 
+        server.getPluginManager().isLoaded("globaltab");
+        logger = llogger;
+
+        logger.info("Loading GlobalTab");
+        configspath = configpaths;
         ConfigManager.setupConfig();
 
         commandManager.register(new CommandGlobalTab(), "globaltab");
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerHandler(),
-                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
-                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
     }
 
     @Subscribe
     public void onInitialization(ProxyInitializeEvent event) {
         if (GlobalTab.server.getPluginManager().isLoaded("luckperms"))
             luckpermsapi = LuckPerms.getApi();
+        schedule();
+
     }
 
     @Subscribe
@@ -131,4 +139,21 @@ public class GlobalTab {
                 toKeep.add(inUUID);
         }
     }
+    public void schedule(){
+        this.task = server.getScheduler().buildTask(this, () -> {
+            // logger.info("Started AutoReload task!");
+
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerHandler(),
+                    Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
+                    Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
+
+
+        }).repeat(10, TimeUnit.MINUTES).schedule();
+    }
+
+
+
+
+
 }
