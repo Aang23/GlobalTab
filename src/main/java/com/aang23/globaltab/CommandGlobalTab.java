@@ -21,13 +21,14 @@ public class CommandGlobalTab implements Command {
                         Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
                         Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
 
-                source.sendMessage(TextComponent.of("Restarted the tab !").color(TextColor.GREEN));
+                source.sendMessage(TextComponent.of("Restarted the tablist updater.").color(TextColor.GREEN));
             } else if (args[0].equals("config")) {
                 ConfigManager.setupConfig();
 
-                source.sendMessage(TextComponent.of("Reloaded the configuration file !").color(TextColor.GREEN));
+                source.sendMessage(TextComponent.of("Reloaded the configuration file.").color(TextColor.GREEN));
             }
-        } else
-            source.sendMessage(TextComponent.of("Usage : /globaltab restart/config").color(TextColor.RED));
+        } else {
+            source.sendMessage(TextComponent.of("Usage : /globaltab <restart/config>").color(TextColor.RED));
+        }
     }
 }

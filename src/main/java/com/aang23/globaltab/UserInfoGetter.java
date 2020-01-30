@@ -1,37 +1,26 @@
 package com.aang23.globaltab;
 
-import me.lucko.luckperms.api.Contexts;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 
 public class UserInfoGetter {
     public static String getPrefixFromUsername(String username) {
         if (GlobalTab.server.getPluginManager().isLoaded("luckperms")) {
-            if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
-                Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
-                        .get();
-                if (GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix() != null)
-                    return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix()
-                            .toString();
-                else
-                    return "";
-            } else
-                return "";
-        } else
-            return "";
+            User lpUser = GlobalTab.lpApi.getUserManager().getUser(username);
+            if (lpUser != null) {
+                return lpUser.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getPrefix();
+            }
+        }
+        return "";
     }
 
     public static String getSuffixFromUsername(String username) {
         if (GlobalTab.server.getPluginManager().isLoaded("luckperms")) {
-            if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
-                Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
-                        .get();
-                if (GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getSuffix() != null)
-                    return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getSuffix()
-                            .toString();
-                else
-                    return "";
-            } else
-                return "";
-        } else
-            return "";
+            User lpUser = GlobalTab.lpApi.getUserManager().getUser(username);
+            if (lpUser != null) {
+                return lpUser.getCachedData().getMetaData(QueryOptions.defaultContextualOptions()).getSuffix();
+            }
+        }
+        return "";
     }
 }
