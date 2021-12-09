@@ -12,7 +12,13 @@ import com.velocitypowered.api.util.GameProfile;
 
 public class TimerHandler extends TimerTask {
 
-	public static boolean stop = false;
+	private GlobalTab plugin;
+
+	public boolean stop = false;
+
+	public TimerHandler(GlobalTab plugin) {
+		this.plugin = plugin;
+	}
 
 	@Override
 	public void run() {
@@ -22,37 +28,37 @@ public class TimerHandler extends TimerTask {
 		}
 
 		try {
-			ProxyServer server = GlobalTab.server;
+			ProxyServer server = plugin.server;
 			if (server.getPlayerCount() > 0) {
 				for (Player currentPlayerToProcess : server.getAllPlayers()) {
-					if (ConfigManager.isServerAllowed(currentPlayerToProcess.getCurrentServer())) {
+					if (plugin.configManager.isServerAllowed(currentPlayerToProcess.getCurrentServer())) {
 
-						List<UUID> toKeep = new ArrayList<UUID>();
+						List<UUID> toKeep = new ArrayList<>();
 
 						for (int i2 = 0; i2 < server.getPlayerCount(); i2++) {
 							Player currentPlayer = (Player) server.getAllPlayers().toArray()[i2];
 
 							TabListEntry currentEntry = TabListEntry.builder().profile(currentPlayer.getGameProfile())
-									.displayName(TabBuilder.formatPlayerTab(
-											(String) ConfigManager.config.get("player_format"), currentPlayer))
+									.displayName(plugin.tabBuilder.formatPlayerTab(
+											(String) plugin.configManager.config.get("player_format"), currentPlayer))
 									.tabList(currentPlayerToProcess.getTabList()).build();
 
-							GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
+							plugin.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
 									toKeep);
 						}
 
-						if (ConfigManager.customTabsEnabled()) {
-							List<String> customtabs = ConfigManager.getCustomTabs();
+						if (plugin.configManager.customTabsEnabled()) {
+							List<String> customtabs = plugin.configManager.getCustomTabs();
 
 							for (int i3 = 0; i3 < customtabs.size(); i3++) {
-								GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + String.valueOf(i3));
+								GameProfile tabProfile = GameProfile.forOfflinePlayer("customTab" + i3);
 
 								TabListEntry currentEntry = TabListEntry.builder().profile(tabProfile)
 										.displayName(
-												TabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
+												plugin.tabBuilder.formatCustomTab(customtabs.get(i3), currentPlayerToProcess))
 										.tabList(currentPlayerToProcess.getTabList()).build();
 
-								GlobalTab.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
+								plugin.insertIntoTabListCleanly(currentPlayerToProcess.getTabList(), currentEntry,
 										toKeep);
 							}
 						}
@@ -61,11 +67,9 @@ public class TimerHandler extends TimerTask {
 							if (!toKeep.contains(current.getProfile().getId()))
 								currentPlayerToProcess.getTabList().removeEntry(current.getProfile().getId());
 						}
-
-						currentPlayerToProcess.getTabList().setHeaderAndFooter(
-								TabBuilder.formatCustomTab((String) ConfigManager.config.get("header"),
+						currentPlayerToProcess.sendPlayerListHeaderAndFooter(plugin.tabBuilder.formatCustomTab((String) plugin.configManager.config.get("header"),
 										currentPlayerToProcess),
-								TabBuilder.formatCustomTab((String) ConfigManager.config.get("footer"),
+								plugin.tabBuilder.formatCustomTab((String) plugin.configManager.config.get("footer"),
 										currentPlayerToProcess));
 					}
 				}
