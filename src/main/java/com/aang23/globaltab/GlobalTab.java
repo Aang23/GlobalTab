@@ -6,19 +6,14 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.player.TabList;
 import com.velocitypowered.api.proxy.player.TabListEntry;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.proxy.server.ServerInfo;
-import com.velocitypowered.api.proxy.server.ServerPing;
 
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.slf4j.Logger;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.LuckPermsApi;
 import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
@@ -26,46 +21,54 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
-@Plugin(id = "globaltab", name = "GlobalTab", version = "1.0", description = "A plugin", authors = { "Aang23" })
+@Plugin(id = "globaltab", name = "GlobalTab", version = "1.1.0", description = "A plugin", authors = { "Aang23" })
 public class GlobalTab {
-    public static ProxyServer server;
-    public static Logger logger;
-    public static Path configspath;
-    public static LuckPermsApi luckpermsapi;
+    public final ProxyServer server;
+    public final CommandManager commandManager;
+    public final Logger logger;
+    public final ConfigManager configManager;
+    public final Path configspath;
+    public LuckPerms luckpermsapi;
 
-    public static Map<String, Double> playerBalances = new HashMap<String, Double>();
+    public TabBuilder tabBuilder;
+    public TimerHandler timerHandler;
+    public UserInfoGetter userInfoGetter;
+
+    public Map<String, Double> playerBalances = new HashMap<>();
 
     @Inject
-    public GlobalTab(ProxyServer lserver, CommandManager commandManager, EventManager eventManager, Logger llogger,
-            @DataDirectory Path configpaths) {
-
-        server = lserver;
-        logger = llogger;
-        configspath = configpaths;
+    public GlobalTab(ProxyServer server, Logger logger, @DataDirectory Path configpaths) {
+        this.server = server;
+        this.logger = logger;
+        this.configspath = configpaths;
         logger.info("Loading GlobalTab");
 
-        ConfigManager.setupConfig();
+        tabBuilder = new TabBuilder(this);
+        configManager = new ConfigManager(this);
+        timerHandler = new TimerHandler(this);
+        userInfoGetter = new UserInfoGetter(this);
+        commandManager = server.getCommandManager();
 
-        commandManager.register(new CommandGlobalTab(), "globaltab");
+        configManager.setupConfig();
+
+        commandManager.register(commandManager.metaBuilder("globaltab").build(), new CommandGlobalTab(this));
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerHandler(),
-                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
-                Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
+        timer.scheduleAtFixedRate(timerHandler,
+                Integer.parseInt((String) configManager.config.get("updatedelay")) * 1000,
+                Integer.parseInt((String) configManager.config.get("updatedelay")) * 1000);
     }
 
     @Subscribe
     public void onInitialization(ProxyInitializeEvent event) {
-        if (GlobalTab.server.getPluginManager().isLoaded("luckperms"))
-            luckpermsapi = LuckPerms.getApi();
+        if (server.getPluginManager().isLoaded("luckperms"))
+            luckpermsapi = LuckPermsProvider.get();
     }
 
     @Subscribe
@@ -99,7 +102,7 @@ public class GlobalTab {
         String subChannel = in.readUTF();
 
         if (subChannel.equals("Balance")) {
-            String packet[] = in.readUTF().split(":");
+            String[] packet = in.readUTF().split(":");
             String username = packet[0];
             Double balance = Double.parseDouble(packet[1]);
             if (playerBalances.containsKey(username))
@@ -109,10 +112,10 @@ public class GlobalTab {
         }
     }
 
-    public static void insertIntoTabListCleanly(TabList list, TabListEntry entry, List<UUID> toKeep) {
+    public void insertIntoTabListCleanly(TabList list, TabListEntry entry, List<UUID> toKeep) {
         UUID inUUID = entry.getProfile().getId();
-        List<UUID> containedUUIDs = new ArrayList<UUID>();
-        Map<UUID, TabListEntry> cache = new HashMap<UUID, TabListEntry>();
+        List<UUID> containedUUIDs = new ArrayList<>();
+        Map<UUID, TabListEntry> cache = new HashMap<>();
         for (TabListEntry current : list.getEntries()) {
             containedUUIDs.add(current.getProfile().getId());
             cache.put(current.getProfile().getId(), current);
@@ -120,15 +123,13 @@ public class GlobalTab {
         if (!containedUUIDs.contains(inUUID)) {
             list.addEntry(entry);
             toKeep.add(inUUID);
-            return;
         } else {
             TabListEntry currentEntr = cache.get(inUUID);
-            if (!currentEntr.getDisplayName().equals(entry.getDisplayName())) {
+            if (!currentEntr.getDisplayNameComponent().equals(entry.getDisplayNameComponent())) {
                 list.removeEntry(inUUID);
                 list.addEntry(entry);
-                toKeep.add(inUUID);
-            } else
-                toKeep.add(inUUID);
+            }
         }
+        toKeep.add(inUUID);
     }
 }

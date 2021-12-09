@@ -1,16 +1,18 @@
 package com.aang23.globaltab;
 
-import me.lucko.luckperms.api.Contexts;
-
 public class UserInfoGetter {
-    public static String getPrefixFromUsername(String username) {
-        if (GlobalTab.server.getPluginManager().isLoaded("luckperms")) {
-            if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
-                Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
-                        .get();
-                if (GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix() != null)
-                    return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getPrefix()
-                            .toString();
+
+    private GlobalTab plugin;
+
+    public UserInfoGetter(GlobalTab plugin) {
+        this.plugin = plugin;
+    }
+
+    public String getPrefixFromUsername(String username) {
+        if (plugin.server.getPluginManager().isLoaded("luckperms")) {
+            if (plugin.luckpermsapi.getUserManager().getUser(username) != null) {
+                if (plugin.luckpermsapi.getUserManager().getUser(username).getCachedData().getMetaData().getPrefix() != null)
+                    return plugin.luckpermsapi.getUserManager().getUser(username).getCachedData().getMetaData().getPrefix();
                 else
                     return "";
             } else
@@ -19,14 +21,11 @@ public class UserInfoGetter {
             return "";
     }
 
-    public static String getSuffixFromUsername(String username) {
-        if (GlobalTab.server.getPluginManager().isLoaded("luckperms")) {
-            if (GlobalTab.luckpermsapi.getUserSafe(username).isPresent()) {
-                Contexts contexts = GlobalTab.luckpermsapi.getContextForUser(GlobalTab.luckpermsapi.getUser(username))
-                        .get();
-                if (GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getSuffix() != null)
-                    return GlobalTab.luckpermsapi.getUser(username).getCachedData().getMetaData(contexts).getSuffix()
-                            .toString();
+    public String getSuffixFromUsername(String username) {
+        if (plugin.server.getPluginManager().isLoaded("luckperms")) {
+            if (plugin.luckpermsapi.getUserManager().getUser(username) != null) {
+                if (plugin.luckpermsapi.getUserManager().getUser(username).getCachedData().getMetaData().getSuffix() != null)
+                    return plugin.luckpermsapi.getUserManager().getUser(username).getCachedData().getMetaData().getSuffix();
                 else
                     return "";
             } else

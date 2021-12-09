@@ -16,15 +16,22 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.velocitypowered.api.proxy.ServerConnection;
 
 public class ConfigManager {
-    public static JSONObject config = null;
 
-    private static List<String> disabledServers = new ArrayList<String>();
-    private static List<String> customTabs = new ArrayList<String>();
+    public GlobalTab plugin;
 
-    public static void setupConfig() {
-        if (!GlobalTab.configspath.toFile().exists())
-            GlobalTab.configspath.toFile().mkdirs();
-        if (!new File(GlobalTab.configspath.toString() + "/globaltab.json").exists()) {
+    public JSONObject config = null;
+
+    private List<String> disabledServers = new ArrayList<>();
+    private List<String> customTabs = new ArrayList<>();
+
+    public ConfigManager(GlobalTab plugin) {
+        this.plugin = plugin;
+    }
+
+    public void setupConfig() {
+        if (!plugin.configspath.toFile().exists())
+            plugin.configspath.toFile().mkdirs();
+        if (!new File(plugin.configspath.toString() + "/globaltab.json").exists()) {
             try {
                 writeInitialConfig();
             } catch (FileNotFoundException e1) {
@@ -34,21 +41,18 @@ public class ConfigManager {
 
         Object configobj = null;
         try {
-            configobj = new JSONParser().parse(new FileReader(GlobalTab.configspath.toString() + "/globaltab.json"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+            configobj = new JSONParser().parse(new FileReader(plugin.configspath.toString() + "/globaltab.json"));
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
         config = (JSONObject) configobj;
 
-        disabledServers = (List<String>) ConfigManager.config.get("disabled_servers");
-        customTabs = (List<String>) ConfigManager.config.get("customtabs");
+        disabledServers = (List<String>) plugin.configManager.config.get("disabled_servers");
+        customTabs = (List<String>) plugin.configManager.config.get("customtabs");
     }
 
-    private static void writeInitialConfig() throws FileNotFoundException {
+    private void writeInitialConfig() throws FileNotFoundException {
         JSONObject configfile = new JSONObject();
 
         configfile.put("header", "&4Welcome, &6%username%&4 on");
@@ -67,15 +71,15 @@ public class ConfigManager {
         disabledServers.add("thisserverwonthavethetab");
         configfile.put("disabled_servers", disabledServers);
 
-        PrintWriter pw = new PrintWriter(GlobalTab.configspath.toString() + "/globaltab.json");
+        PrintWriter pw = new PrintWriter(plugin.configspath.toString() + "/globaltab.json");
         pw.write(JsonWriter.formatJson(configfile.toJSONString()));
 
         pw.flush();
         pw.close();
     }
 
-    public static boolean isServerAllowed(Optional<ServerConnection> server) {
-        String name = null;
+    public boolean isServerAllowed(Optional<ServerConnection> server) {
+        String name;
         if (server.isPresent())
             name = server.get().getServerInfo().getName();
         else
@@ -87,11 +91,11 @@ public class ConfigManager {
             return true;
     }
 
-    public static List<String> getCustomTabs() {
+    public List<String> getCustomTabs() {
         return customTabs;
     }
 
-    public static boolean customTabsEnabled() {
-        return (boolean) ConfigManager.config.get("customtabsenabled");
+    public boolean customTabsEnabled() {
+        return (boolean) plugin.configManager.config.get("customtabsenabled");
     }
 }

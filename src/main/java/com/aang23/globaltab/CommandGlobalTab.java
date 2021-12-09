@@ -2,32 +2,44 @@ package com.aang23.globaltab;
 
 import java.util.Timer;
 
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import com.velocitypowered.api.command.SimpleCommand;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
-public class CommandGlobalTab implements Command {
+public class CommandGlobalTab implements SimpleCommand {
+
+    private GlobalTab plugin;
+
+    public CommandGlobalTab(GlobalTab plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-    public void execute(@NonNull CommandSource source, String[] args) {
+    public void execute(final Invocation invocation) {
+        CommandSource source = invocation.source();
+        String[] args = invocation.arguments();
         if (args.length > 0) {
             if (args[0].equals("restart")) {
-                TimerHandler.stop = true;
+                plugin.timerHandler.stop = true;
 
                 Timer timer = new Timer();
-                timer.scheduleAtFixedRate(new TimerHandler(),
-                        Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000,
-                        Integer.parseInt((String) ConfigManager.config.get("updatedelay")) * 1000);
+                timer.scheduleAtFixedRate(plugin.timerHandler,
+                        Integer.parseInt((String) plugin.configManager.config.get("updatedelay")) * 1000,
+                        Integer.parseInt((String) plugin.configManager.config.get("updatedelay")) * 1000);
 
-                source.sendMessage(TextComponent.of("Restarted the tab !").color(TextColor.GREEN));
+                source.sendMessage(Component.text("Restarted the tab !", NamedTextColor.GREEN));
             } else if (args[0].equals("config")) {
-                ConfigManager.setupConfig();
+                plugin.configManager.setupConfig();
 
-                source.sendMessage(TextComponent.of("Reloaded the configuration file !").color(TextColor.GREEN));
+                source.sendMessage(Component.text("Reloaded the configuration file !", NamedTextColor.GREEN));
             }
         } else
-            source.sendMessage(TextComponent.of("Usage : /globaltab restart/config").color(TextColor.RED));
+            source.sendMessage(Component.text("Usage : /globaltab restart/config", NamedTextColor.RED));
+    }
+
+    @Override
+    public boolean hasPermission(final Invocation invocation) {
+        return invocation.source().hasPermission("globaltab.admin");
     }
 }
